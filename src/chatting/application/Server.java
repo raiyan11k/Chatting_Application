@@ -7,22 +7,27 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;         // to call calendar
 import java.text.*;   // child package / class of util 
+import java.net.*;  // to create server 
+import java.io.*;
 
-public class Server extends JFrame implements ActionListener { // action listener comes from awt event package
+
+public class Server implements ActionListener { // action listener comes from awt event package
     
     JTextField text;    // globally declare 
     JPanel a1;         //globally declare
-    Box vertical = Box.createVerticalBox(); // for showing sender text to the right side
+    static Box vertical = Box.createVerticalBox(); // for showing sender text to the right side
+    static JFrame f = new JFrame();
+    static DataOutputStream dout;
     
     Server(){
         
-        setLayout(null);
+        f.setLayout(null);
         
         JPanel p1 = new JPanel();
         p1.setBackground(new Color(7,94,84)); // header bg
         p1.setBounds(0, 0, 450, 70);
         p1.setLayout(null);
-        add(p1);
+        f.add(p1);
         
         ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/3.png"));
         Image i2 = i1.getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT);  // Scaing the image
@@ -79,13 +84,13 @@ public class Server extends JFrame implements ActionListener { // action listene
         
         a1 = new JPanel();                    //jpanel globally declared 
         a1.setBounds(5,75,440,570);
-        add(a1);
+        f.add(a1);
         
         
         text = new JTextField();   // Text box to send msg
         text.setBounds(5,655,310,40);
         text.setFont(new Font("SAN_SERIF", Font.PLAIN, 16));
-        add(text);
+        f.add(text);
         
         JButton send = new JButton("Send");   // send button
         send.setBounds(320,655,123,40);
@@ -93,36 +98,40 @@ public class Server extends JFrame implements ActionListener { // action listene
         send.setForeground(Color.WHITE);
         send.addActionListener(this);
         send.setFont(new Font("SAN_SERIF", Font.PLAIN, 16));  //font size
-        add(send);
+        f.add(send);
         
         
-        setSize(450,700); //creating fram-e 
-        setLocation(200,50); // so the frame doesnt open in the corner
-        setUndecorated(true);  // removing frame header /title bar
-        getContentPane().setBackground(Color.WHITE); // setting the bakcground color using java awt package 
-        
-        setVisible(true); // setting frame visibility 
+        f.setSize(450,700); //creating fram-e 
+        f.setLocation(200,50); // so the frame doesnt open in the corner
+        f.setUndecorated(true);  // removing frame header /title bar
+        f.getContentPane().setBackground(Color.WHITE); // setting the bakcground color using java awt package 
+        f.setVisible(true); // setting frame visibility 
     }
     
     public void actionPerformed(ActionEvent ae){  //override actionevent
-        String out = text.getText();
-        
-        JPanel p2 = formatLabel(out);
-        
-        a1.setLayout(new BorderLayout());     // border layout places elimends top,bttom,left right or center
-        JPanel right = new JPanel(new BorderLayout());
-        right.add(p2,BorderLayout.LINE_END);
-        vertical.add(right);      // showing the sender msg right. one bellow another allignment
-        vertical.add(Box.createVerticalStrut(15));  // so the msgs show one below another in a new line and the gap between each msgs 
-        
-        a1.add(vertical, BorderLayout.PAGE_START);
-        
-        text.setText("");        // this is to make the text box empy after sending msg
-        
-        
-        repaint();   // call frame
-        invalidate(); // repaint
-        validate();
+        try{
+            String out = text.getText();
+
+            JPanel p2 = formatLabel(out);
+
+            a1.setLayout(new BorderLayout());     // border layout places elimends top,bttom,left right or center
+            JPanel right = new JPanel(new BorderLayout());
+            right.add(p2,BorderLayout.LINE_END);
+            vertical.add(right);      // showing the sender msg right. one bellow another allignment
+            vertical.add(Box.createVerticalStrut(15));  // so the msgs show one below another in a new line and the gap between each msgs 
+
+            a1.add(vertical, BorderLayout.PAGE_START);
+
+            text.setText("");        // this is to make the text box empy after sending msg
+
+            dout.writeUTF(out);
+
+            f.repaint();   // call frame
+            f.invalidate(); // repaint
+            f.validate();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
     
     public static JPanel formatLabel (String out){
@@ -150,5 +159,28 @@ public class Server extends JFrame implements ActionListener { // action listene
     
     public static void main(String[] args){
         new Server();
+        
+        try {
+            ServerSocket skt = new ServerSocket ( 6001);   // Server creation . this is server port number
+            while(true){                   // to send msg infinitely
+                Socket s = skt.accept();
+                DataInputStream din = new DataInputStream(s.getInputStream());   //to send
+                dout = new DataOutputStream(s.getOutputStream());  // to recieve
+                
+                while(true){
+                    String msg = din.readUTF();
+                    JPanel panel = formatLabel(msg);
+                    
+                    JPanel left = new JPanel (new BorderLayout());
+                    left.add(panel, BorderLayout.LINE_START);    // show recieve msg on line start
+                    vertical.add(left);
+                    f.validate();
+                    
+                }
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
