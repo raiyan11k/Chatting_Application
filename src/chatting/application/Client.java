@@ -8,13 +8,13 @@ import java.awt.event.*;
 import java.util.*;         // to call calendar
 import java.text.*;   // child package / class of util 
 
-public class Server extends JFrame implements ActionListener { // action listener comes from awt event package
+public class Client extends JFrame implements ActionListener { // action listener comes from awt event package
     
     JTextField text;    // globally declare 
     JPanel a1;         //globally declare
     Box vertical = Box.createVerticalBox(); // for showing sender text to the right side
     
-    Server(){
+    Client (){             // Constructor
         
         setLayout(null);
         
@@ -37,7 +37,7 @@ public class Server extends JFrame implements ActionListener { // action listene
             }
     });
         
-        ImageIcon i4 = new ImageIcon(ClassLoader.getSystemResource("icons/11.png"));
+        ImageIcon i4 = new ImageIcon(ClassLoader.getSystemResource("icons/12.png"));
         Image i5 = i4.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT);  // Scaing the image
         ImageIcon i6 = new ImageIcon(i5);
         JLabel profile = new JLabel(i6);    // passing image icon object to the jlabel
@@ -65,7 +65,7 @@ public class Server extends JFrame implements ActionListener { // action listene
         morevert.setBounds(420,20,10,25);     // image size and position
         p1.add(morevert);     // show image over the panel p1.add
         
-        JLabel name = new JLabel ("Raiyan");   // user name
+        JLabel name = new JLabel ("User 2");   // user name
         name.setBounds(110,15,100,18);
         name.setForeground(Color.WHITE);
         name.setFont(new Font("SAN_SERIF", Font.BOLD, 18));
@@ -97,7 +97,7 @@ public class Server extends JFrame implements ActionListener { // action listene
         
         
         setSize(450,700); //creating fram-e 
-        setLocation(200,50); // so the frame doesnt open in the corner
+        setLocation(800,50); // so the frame doesnt open in the corner
         setUndecorated(true);  // removing frame header /title bar
         getContentPane().setBackground(Color.WHITE); // setting the bakcground color using java awt package 
         
@@ -149,6 +149,6 @@ public class Server extends JFrame implements ActionListener { // action listene
     }
     
     public static void main(String[] args){
-        new Server();
+        new Client();
     }
 }
